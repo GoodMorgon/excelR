@@ -9,6 +9,8 @@ Authors@R: c(person("Swechhya", "Bista", email = "swechhyabista@gmail.com",
 Maintainer: Swechhya Bista <swechhyabista@gmail.com>
 Description: An R interface to 'jExcel' library to create web-based interactive tables and spreadsheets compatible with 'Excel' or any other spreadsheet software.
 License: MIT + file LICENSE
+Depends:
+	data.table (>= 1.12)
 Imports:
     htmlwidgets (>= 1.3),
     jsonlite (>= 1.6)
