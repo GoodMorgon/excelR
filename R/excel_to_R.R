@@ -20,32 +20,67 @@
 #'}
 
 excel_to_R <- function(excelObj) {
+
    if (!is.null(excelObj)) {
-      data <- excelObj$data
-      colHeaders <- excelObj$colHeaders
-      colType <- excelObj$colType
-      dataOutput <- do.call(rbind.data.frame, data)
+
+      data       <- excelObj$data
+      colHeaders <- unlist(excelObj$colHeaders)
+      colType    <- unlist(excelObj$colType)
+
+      dataOutput <- data.table::rbindlist(data)
+
+      setnames(dataOutput, colHeaders)
+
+      # JSON is character for all types except logical
 
       # Change clandar variables to date
-      if(any(colType == 'calendar')){
-         dateVariables<- which(colType == 'calendar' )
-         dataOutput[dateVariables] <- lapply(dataOutput[dateVariables], as.Date)
+      if (any(colType %in% "calendar")){
+
+         dataOutput[,
+                    (names(dataOutput)[colType %in% "calendar"]) :=
+                    lapply(.SD, FUN = function(i) {
+
+                        as.Date(i, format = "%Y-%m-%d")
+
+                    }),
+                    .SDcols = names(dataOutput)[colType %in% "calendar"]
+                    ]
+
       }
 
-      #if any of the column is not dropdown but is factor convert it to character
-      factorCols <- which(sapply(dataOutput, is.factor))
-      dropdownCols <- which(colType == 'dropdown')
+      if (any(colType %in% c("dropdown", "text"))) {
 
-      # At least one of the factor column is not dropdown,convert that to character
-      if(length(factorCols) != length(dropdownCols) || !all(factorCols == dropdownCols)){
-         diffCols <- setdiff(factorCols, dropdownCols)
-         dataOutput[diffCols] <- lapply(dataOutput[diffCols], as.character)
+         c.check <- c("dropdown", "text")
+
+         dataOutput[,
+                    (names(dataOutput)[colType %in% c.check]) := lapply(.SD, FUN = function(i) {
+
+                        ifelse(i == "", NA_character_, i)
+
+                    }),
+                    .SDcols = names(dataOutput)[colType %in% c.check]
+                    ]
+
       }
 
-      rownames(dataOutput) <- NULL
-      colnames(dataOutput) <- unlist(colHeaders)
+      if (any(colType %in% "numeric")) {
 
-      return(dataOutput)
+         c.check <- "numeric"
+
+         dataOutput[,
+                    (names(dataOutput)[colType %in% c.check]) :=
+                    lapply(.SD, FUN = function(i) {
+
+                        as.numeric(i)
+
+                    }),
+                    .SDcols = names(dataOutput)[colType %in% c.check]
+                    ]
+
+      }
+
+      # return
+      dataOutput
    }
 
 }
