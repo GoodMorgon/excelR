@@ -41,6 +41,8 @@
             return {};
           })();
 
+          otherParams.onload = this.onChange; // Hans addition
+
           otherParams.rows = rows;
           otherParams.tableOverflow = true;
           otherParams.onchange = this.onChange;
