@@ -27,14 +27,23 @@ excel_to_R <- function(excelObj) {
       colHeaders <- unlist(excelObj$colHeaders)
       colType    <- unlist(excelObj$colType)
 
-      dataOutput <- data.table::rbindlist(data)
+      # if all rows are deleted we need to return an empty data.table
+      if (is.null(unlist(data))) {
+
+        dataOutput <- data.table(matrix(ncol = length(colHeaders), nrow = 0))
+
+      } else {
+
+        dataOutput <- data.table::rbindlist(data)
+
+      }
 
       setnames(dataOutput, colHeaders)
 
       # JSON is character for all types except logical
 
       # Change clandar variables to date
-      if (any(colType %in% "calendar")){
+      if (any(colType %in% "calendar")) {
 
          dataOutput[,
                     (names(dataOutput)[colType %in% "calendar"]) :=
@@ -53,7 +62,8 @@ excel_to_R <- function(excelObj) {
          c.check <- c("dropdown", "text")
 
          dataOutput[,
-                    (names(dataOutput)[colType %in% c.check]) := lapply(.SD, FUN = function(i) {
+                    (names(dataOutput)[colType %in% c.check]) := lapply(.SD,
+                     FUN = function(i) {
 
                         ifelse(i == "", NA_character_, i)
 
