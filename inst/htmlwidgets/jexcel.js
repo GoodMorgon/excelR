@@ -81,6 +81,9 @@
         
         otherParams.rows = rows;
         otherParams.tableOverflow = true;
+
+        otherParams.onload = this.onChange; // Hans addition
+
         otherParams.onchange = this.onChange;
         otherParams.oninsertrow = this.onChange;
         otherParams.ondeleterow = this.onChange;
