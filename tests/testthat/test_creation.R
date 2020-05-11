@@ -27,7 +27,10 @@ test_that("logical arguments are logical and if not become NULL", {
         "search",
         "lazyLoading",
         "loadingSpin",
-        "showToolbar"
+        "showToolbar",
+        "autoWidth",
+        "autoFill",
+        "getSelectedData"
   )) {
     l <- list()
     l[[arg]] <- 'not logical'
@@ -55,7 +58,9 @@ test_that("valid logical arguments are passed to htmlwidget", {
         "search",
         "lazyLoading",
         "loadingSpin",
-        "showToolbar"
+        "showToolbar",
+        "autoWidth",
+        "getSelectedData"
   )) {
     l <- list()
     l[[arg]] <- TRUE

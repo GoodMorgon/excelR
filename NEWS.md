@@ -1,4 +1,23 @@
+# excelR 0.4.0
+
+* add option to specify date format
+
+* add dots to make excelTable parameters more flexible
+
+* remove parameter restriction for columns attribute
+
+* add feature to get selected data and selected data boundary
+
+* handle image url 
+
+* fix bug of numeric converting to factor after edit
+
+* update jexcel and jsuites version
+
+* fix test for latest R version breaking changes
+
 # excelR 0.3.1
+
 * fix bug when NA is present in data
 
 * fix bug date and character columns are converted to factor after editing any cell.

@@ -2,7 +2,7 @@
 % Please edit documentation in R/comments.R
 \name{getComments}
 \alias{getComments}
-\title{This function is used to add comment to the specified cell}
+\title{This function is used to get comment from specified cell}
 \usage{
 getComments(tableId, cellId)
 }
@@ -12,14 +12,15 @@ getComments(tableId, cellId)
 \item{cellId}{the id of the cell from which the comment is to be fetched}
 }
 \description{
-This function is used to add comment to the specified cell
+This function is used to get comment from specified cell
 }
 \examples{
 if(interactive()) {
  library(shiny)
  library(excelR)
  shinyApp(
-     ui = fluidPage(excelOutput("table", height = 175), actionButton('comment', 'Get Comments from cell A1')),
+     ui = fluidPage(excelOutput("table", height = 175),
+          actionButton('comment', 'Get Comments from cell A1')),
      server = function(input, output, session) {
          output$table <- renderExcel(excelTable(data = head(iris)))
          observeEvent(input$comment, {

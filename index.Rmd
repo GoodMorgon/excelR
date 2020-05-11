@@ -147,6 +147,22 @@ library(excelR)
 ```
 ![](inst/images/color_type.gif)
 
+- Image
+```r
+library(excelR)
+
+data <- data.frame(Title = c("Paul Parker", "Mark Ellen"),
+                   Cover =  c("https://marketplace.canva.com/MACcZp2p4po/2/0/thumbnail_large/canva-black-white-acoustic-album-cover-MACcZp2p4po.jpg",                          "https://marketplace.canva.com/MACcY55adP4/1/0/thumbnail_large/canva-black-and-white-masculine-acoustic-modern-album-cover-MACcY55adP4.jpg"))
+
+columns <- data.frame(title = colnames(data),
+                      type = c("text", "image"),
+                      width = c(120, 200))
+
+excelTable(data = data, columns = columns)
+
+```
+![](inst/images/image.png)
+
 #### Row and Column Resizing{#resizing}
 ```r
 library(excelR)
@@ -329,13 +345,17 @@ library(excelR)
        output$table <-
       renderExcel(excelTable(data = head(iris)))
       observeEvent(input$table,{
-        print(excel_to_R(input$table))
+        table_data <- excel_to_R(input$table)
+        if(!is.null(table_data)){
+        print(table_data)
+        }
+        
       })
       }
     )
 
 ```
-#### Getting/Setting comment in Shiny (Currently only available in development version)
+#### Getting/Setting comment in Shiny
 ```r
 library(excelR)
 library(shiny)
@@ -370,3 +390,30 @@ shinyApp(
 
 ```
 ![](inst/images/getSetComment.gif)
+
+#### Getting selected data in Shiny
+
+```r
+library(excelR)
+library(shiny)
+
+shinyApp(
+  
+  ui = fluidPage( tags$h6("Selected Data:"),
+                  tableOutput("selectedData"),
+                  tags$h6("Excel Table:"),
+                 excelOutput("table", height = 175)),
+  
+  server = function(input, output, session) {
+    
+    output$table <- renderExcel(excelTable(data = head(iris), getSelectedData = TRUE))
+    
+    # Print the selected data in table
+    observeEvent(input$table,{
+      output$selectedData <- renderTable(get_selected_data(input$table))
+    })
+  }
+)
+
+```
+![](inst/images/selected_data.gif)

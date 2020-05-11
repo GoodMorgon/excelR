@@ -14,26 +14,15 @@ excelTable(data = NULL, columns = NULL, colHeaders = NULL,
   selectionCopy = TRUE, mergeCells = NULL, search = FALSE,
   pagination = NULL, fullscreen = FALSE, lazyLoading = FALSE,
   loadingSpin = FALSE, style = NULL, autoColTypes = TRUE,
-  showToolbar = FALSE, dateFormat = "DD/MM/YYYY", digits = 4, ...)
+  showToolbar = FALSE, dateFormat = "DD/MM/YYYY", digits = 4,
+  autoWidth = TRUE, autoFill = FALSE, getSelectedData = FALSE, ...)
 }
 \arguments{
 \item{data}{a data object, can either be dataframe or a matrix.}
 
 \item{columns}{a dataframe containing different column attributes.
 The row number  of the dataframe specifies the column for which the attribute is to be specified and
-the header of the dataframe specifies the attribute.The following attributes are supported:
- \itemize{
-  \item \strong{title:} a string specifying title of the column or the column header.
-  \item \strong{width:} a numerical value specifying the width of the column.
-  \item \strong{type:} the type of the column. It can be one of text, numeric, hidden, dropdown,
-  autocomplete, checkbox, radio, calendar, image or color.
-  \item \strong{source:} a vector of options for column when the type is 'dropdwown'.
-   \item \strong{multiple:} a boolean value indicating if the multiple options can be selected when the type is 'dropdown'.
-   The default value is false.
-   \item \strong{render:} a character value indicating if we want to render color for 'color' type instead of text. If render
-   is provided a value 'square', color is rendered instead of text.
-  \item \strong{readOnly:} a boolean value specifying the readonly column.
-}}
+the header of the dataframe specifies the attribute, e.g., title, width, type, source, multiple, render, readOnly.}
 
 \item{colHeaders}{a vector of specifying the column headers. If both 'colHeaders' and 'title' attribute
 in columns is specified, the latter will take precedence.}
@@ -108,6 +97,15 @@ format is 'DD/MM/YYYY'.}
 
 \item{digits}{number of decimal digits passed to \code{jsonlite::toJSON}. By default it is set to 4, use \code{NA} for max precision.}
 
+\item{autoWidth}{a boolean value indicating should the width of the column be automatically adjusted. By default this value is set to TRUE.
+The width value specified in 'columns' param will have higher precedence.}
+
+\item{autoFill}{a boolen value indicating whether the excel table fill the container. By default this value is set to false.
+The width value specified in 'columns' param will have highest precendence followed by autoWidth.}
+
+\item{getSelectedData}{a boolean value indicating whether the there should be trigger for data selection or not.
+By default this is set to false.}
+
 \item{...}{other jexcel parameters, e.g., updateTable}
 }
 \description{
@@ -127,6 +125,31 @@ columns = data.frame(title=c('Model', 'Date', 'Availability'),
                      type=c('text', 'calendar', 'checkbox'))
 
 excelTable(data=data, columns = columns)
+
+### columns parameter ----
+# https://bossanova.uk/jexcel/v3/examples/column-types
+data <- data.frame(Car = c("Jazz", "Civic"),
+                   Make = c("Honda", "Honda" ),
+                   Photo = c("https://images.unsplash.com/photo-1535498730771-e735b998cd64?ixlib=rb
+                             -1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=634&q=80",
+                             "https://images.unsplash.com/photo-1533106497176-45ae19e68ba2?ixlib=rb
+                             -1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1950&q=80"),
+                   Available = as.Date(c("2019-02-12", "2018-07-11")),
+                   Stock = c(TRUE, TRUE),
+                   Price = c(2000, 4000.01),
+                   Color = c("#777700", "#007777"))
+
+columns <- data.frame(title = colnames(data),
+                      type = c("hidden", "dropdown", "image", "calendar",
+                               "checkbox", "numeric", "color"),
+                      width = c(120, 200, 200, 80, 100, 100, 100),
+                      source = I(list(NA, c("Honda", "Alfa Romeo", "Audi", "Bmw"),
+                                      NA, NA, NA, NA, NA)),
+                      mask = c(NA, NA, NA, NA, NA, "$ #.##,00", NA),
+                      decimal = c(NA, NA, NA, NA, NA, ",", NA),
+                      render = c(NA, NA, NA, NA, NA, NA, "square"))
+
+excelTable(data = data, columns = columns)
 
 ### no arguments with matrix ----
 excelTable(matrix(1:20, ncol=4))
@@ -189,7 +212,7 @@ updateTable <- "function(instance, cell, col, row, val, label, cellName) {
 
 excelTable(data = data, updateTable = htmlwidgets::JS(updateTable))
 
-# example from  https://bossanova.uk/jexcel/v3/examples/table-style
+# example from  https://bossanova.uk/jexcel/v3/examples/table-scripting
 library(excelR)
 
 data <- jsonlite::fromJSON('[
